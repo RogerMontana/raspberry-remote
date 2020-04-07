@@ -31,16 +31,14 @@ class CovidInfoHandler(tornado.web.RequestHandler):
         by_countries = country_summary['Countries']
         for country_info in by_countries:
             if country_info['CountryCode'] == countryCode:
-                info = "Country: {}\nTotalDeaths: {}\nNewConfirmed: {}\nTotalConfirmed: {}\n".format(country_info['Country'],
+                info = "Country: {} TotalDeaths: {} NewConfirmed: {} TotalConfirmed: {}".format(country_info['Country'],
                                                                                                      country_info['TotalDeaths'],
                                                                                                      country_info['NewConfirmed'],
                                                                                                      country_info['TotalConfirmed'])
                 self.country_mapping[countryCode] = info
-                cmd = './home/pi/Desktop/display ' + info
+                cmd = "/home/pi/Desktop/display {}".format(info)
                 os.system(cmd)
-                print(info)
-
-        self.write("OK")
+        self.write(self.country_mapping)
 
 
 class ProviderByIdHandler(tornado.web.RequestHandler):
