@@ -1,9 +1,10 @@
-import os
 from datetime import date
 import tornado.ioloop
 import tornado.web
 import requests
 import os
+
+from pi import util
 
 settings = {'debug': True}
 
@@ -25,40 +26,32 @@ class CovidInfoHandler(tornado.web.RequestHandler):
         pass
 
     # country code 2letters example Ukraine - UA
-    def get(self, countryCode):
+    def get(self, country_code):
 
-        country_summary = requests.get('https://api.covid19api.com/summary').json()
+        covid_api_com_summary = 'https://api.covid19api.com/summary'
+        country_summary = requests.get(covid_api_com_summary).json()
+
         by_countries = country_summary['Countries']
         for country_info in by_countries:
-            if country_info['CountryCode'] == countryCode:
-                info = "Covid19_DAY State:{} AllDeaths:{} NewInfctd:{} AllCases:{}".format(country_info['Country'],
-                                                                    country_info['TotalDeaths'],
-                                                                    country_info['NewConfirmed'],
-                                                                    country_info['TotalConfirmed'])
-                self.country_mapping[countryCode] = info
-                cmd = "/home/pi/Desktop/display {}".format(info)
-                os.system(cmd)
+            if country_info['CountryCode'] == str(country_code).upper():
+                info = "Covid19_DAY State:{} Death:{}+{} New:{} AllCases:{}".format(country_info['Country'],
+                                                                                    country_info['TotalDeaths'],
+                                                                                    country_info['NewDeaths'],
+                                                                                    country_info['NewConfirmed'],
+                                                                                    country_info['TotalConfirmed'])
+                self.country_mapping[country_code] = info
+                util.Dispaly.show(info)
         self.write(self.country_mapping)
 
 
-class ProviderByIdHandler(tornado.web.RequestHandler):
-    def data_received(self, chunk):
-        pass
-
-    def get(self, id):
-        response = {'id': int(id),
-                    'name': 'Provider Cafe',
-                    'release_date': date.today().isoformat()}
-        self.write(response)
-
-
 application = tornado.web.Application([
-    (r"/getProvider/([0-9]+)", ProviderByIdHandler),
     (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': os.path.join('static')}),
     (r"/version", VersionHandler),
     (r"/covid/(.*)", CovidInfoHandler)
 ], settings)
 
 if __name__ == "__main__":
-    application.listen(8888)
+    port = 8888
+    application.listen(port)
+    print("Server started at {}".format(port))
     tornado.ioloop.IOLoop.instance().start()
