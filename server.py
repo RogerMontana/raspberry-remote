@@ -28,9 +28,15 @@ class CovidInfoHandler(tornado.web.RequestHandler):
     # country code 2letters example Ukraine - UA
     def get(self, country_code):
         covid_api_com_summary = 'https://api.covid19api.com/summary'
-        country_summary = requests.get(covid_api_com_summary).json()
 
-        by_countries = country_summary['Countries']
+        try:
+            with requests.get(covid_api_com_summary) as summary_response:
+                summary = summary_response.json()
+        except:
+            print("Cant get info, information not updated")
+            return
+
+        by_countries = summary['Countries']
         for country_info in by_countries:
             if country_info['CountryCode'] == str(country_code).upper():
                 info = "Covid19_DAY State:{} Death:{}+{} New:{} AllCases:{}".format(country_info['Country'],
