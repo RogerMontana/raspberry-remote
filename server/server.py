@@ -31,7 +31,7 @@ class CovidInfoHandler(tornado.web.RequestHandler):
         by_countries = country_summary['Countries']
         for country_info in by_countries:
             if country_info['CountryCode'] == countryCode:
-                info = "Covid19_DAY State:{} AllDeaths:{} NewInfctd:{} TotalCases:{}".format(country_info['Country'],
+                info = "Covid19_DAY State:{} AllDeaths:{} NewInfctd:{} AllCases:{}".format(country_info['Country'],
                                                                     country_info['TotalDeaths'],
                                                                     country_info['NewConfirmed'],
                                                                     country_info['TotalConfirmed'])
