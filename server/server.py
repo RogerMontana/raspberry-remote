@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 import tornado.ioloop
 import tornado.web
 import requests
@@ -27,7 +27,6 @@ class CovidInfoHandler(tornado.web.RequestHandler):
 
     # country code 2letters example Ukraine - UA
     def get(self, country_code):
-
         covid_api_com_summary = 'https://api.covid19api.com/summary'
         country_summary = requests.get(covid_api_com_summary).json()
 
@@ -41,6 +40,7 @@ class CovidInfoHandler(tornado.web.RequestHandler):
                                                                                     country_info['TotalConfirmed'])
                 self.country_mapping[country_code] = info
                 util.Dispaly.show(info)
+        print("Called at-{} DATA:{}".format(datetime.now(), self.country_mapping))
         self.write(self.country_mapping)
 
 
