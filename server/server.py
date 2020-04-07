@@ -24,17 +24,17 @@ class CovidInfoHandler(tornado.web.RequestHandler):
     def data_received(self, chunk):
         pass
 
-    #country code 2letters example Ukraine - UA
+    # country code 2letters example Ukraine - UA
     def get(self, countryCode):
 
         country_summary = requests.get('https://api.covid19api.com/summary').json()
         by_countries = country_summary['Countries']
         for country_info in by_countries:
             if country_info['CountryCode'] == countryCode:
-                info = "COVID in {} Deaths: {} NewConf: {} TotalConf: {}".format(country_info['Country'],
-                                                                                                     country_info['TotalDeaths'],
-                                                                                                     country_info['NewConfirmed'],
-                                                                                                     country_info['TotalConfirmed'])
+                info = "{} Deaths: {} NewConf: {} Total: {}".format(country_info['Country'],
+                                                                    country_info['TotalDeaths'],
+                                                                    country_info['NewConfirmed'],
+                                                                    country_info['TotalConfirmed'])
                 self.country_mapping[countryCode] = info
                 cmd = "/home/pi/Desktop/display {}".format(info)
                 os.system(cmd)
